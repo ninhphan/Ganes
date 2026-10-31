@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .games {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .game-button {
+            display: block;
+            padding: 40px 30px;
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .game-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        @media (hover: hover) {
+            .game-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Choose a Game</h1>
+    <div class="games">
+        <a href="fish/" class="game-button">🐟 Fish Feast Sort</a>
+        <a href="fruit/" class="game-button">🍎 Fruit Drop Merge</a>
+    </div>
+</body>
+</html>
