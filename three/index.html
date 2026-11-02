@@ -12,7 +12,7 @@
   const W = 720, H = 1280, STEP = 1000 / 60;
   const Q = new URLSearchParams(location.search);
   const FAST = Math.max(1, Math.min(40, +Q.get('fast') || 1));
-  const SCENES = ['tilt', 'orders'];
+  const SCENES = ['tilt1', 'tilt2', 'tilt3', 'orders'];
 
   const FR = [
     { k: 'cherry', r: 24, c: 0xe8283c, d: 0x9e1020, en: 'Cherry', vi: 'Anh đào' },
@@ -54,6 +54,7 @@
       spawn: () => play('spawn', 60, () => tone(520, 300, 0.08, 'sine', 0.1)),
       merge: lv => play('merge', 35, () => { const f = 330 * Math.pow(1.122, lv); tone(f, f * 1.5, 0.12, 'triangle', 0.2); tone(f * 2, 0, 0.1, 'sine', 0.08, 0.05); }),
       click: () => play('click', 40, () => tone(700, 0, 0.05, 'triangle', 0.12)),
+      crack: () => play('crack', 80, () => { tone(180, 60, 0.18, 'sawtooth', 0.12); tone(90, 40, 0.25, 'square', 0.06, 0.04); }),
       warn: () => play('warn', 450, () => tone(880, 0, 0.08, 'square', 0.05)),
       serve: () => play('serve', 60, () => { tone(988, 0, 0.09, 'square', 0.07); tone(1319, 0, 0.22, 'square', 0.07, 0.08); }),
       happy: () => play('happy', 200, () => [660, 880, 1100].forEach((f, i) => tone(f, f * 1.1, 0.1, 'sine', 0.15, i * 0.07))),
@@ -68,30 +69,30 @@
     const an = f => ('AEIOU'.includes(f[0]) ? 'an ' : 'a ') + f;
     const TX = {
       en: {
-        title: 'Ocean Lab', sub: '2 new mechanics · try both', pick: 'Which one feels the freshest?',
-        n1: 'Tilt Tray', d1: 'You can\'t drop. Tilt the tray so\nfruits roll together and merge.',
+        title: 'Ocean Lab', sub: '4 levels · 2 mechanics', pick: 'Which one feels the freshest?',
+        n1: 'Tilt Tray', d1a: 'Gentle start. Tilt so same\nfruits touch and merge.', d1b: 'Stones fall in after a while.\nRoll them until they crack.', d1c: 'The tide tilts the tray by\nitself. Tilt back against it.',
         n2: 'Fish Orders', d2: 'Merge fruits, then tap one to\nserve what each fish ordered.',
         best: t => 'Best ' + t, notYet: 'Not played yet', play: 'PLAY',
         g1: f => 'Make ' + an(f), g2: (a, b) => 'Serve all fish  ' + a + '/' + b,
-        tut1: 'Hold & drag LEFT / RIGHT to tilt the tray.\nRolling fruits that bump merge!',
+        tut1: 'Hold & drag LEFT / RIGHT to tilt the tray.\nSame fruits that touch merge!', hint2: '🪨 Stones never merge: tilt to roll & crack them!', hint3: '🌊 The tide tilts the tray: tilt back against it!',
         tut2a: 'Drag to aim, release to drop.\nMerge fruits into what the fish ordered.',
         tut2b: 'This fruit matches an order!\nTap a glowing fruit to serve it.',
         pinned: 'Another cloth lies on top of it', hasItems: 'Take the items off this cloth first', noTray: 'No free tray for this item!',
         win: 'Level Complete!', lose1: 'Tray overflow!', loseSub1: 'A fruit stayed above the red line too long', lose2: 'Box overflow!',
-        retry: '↻ Retry', menu: '⌂ Menu', next: 'Next ▶', time: s => 'Time ' + s, newBest: 'New best!', allDone: 'You tried both!',
+        retry: '↻ Retry', menu: '⌂ Menu', next: 'Next ▶', time: s => 'Time ' + s, newBest: 'New best!', allDone: 'You cleared all 4!',
       },
       vi: {
-        title: 'Ocean Lab', sub: '2 cơ chế mới · thử cả hai', pick: 'Cái nào thấy mới lạ nhất?',
-        n1: 'Nghiêng Khay', d1: 'Không được thả. Nghiêng khay để\ntrái cây lăn vào nhau và gộp lại.',
+        title: 'Ocean Lab', sub: '4 màn · 2 cơ chế', pick: 'Cái nào thấy mới lạ nhất?',
+        n1: 'Nghiêng Khay', d1a: 'Khởi động nhẹ. Nghiêng để\ntrái giống nhau chạm và gộp.', d1b: 'Một lúc sau sẽ có đá rơi.\nNghiêng cho đá lăn để vỡ.', d1c: 'Thủy triều tự làm nghiêng\nkhay. Hãy nghiêng ngược lại.',
         n2: 'Đơn Hàng Của Cá', d2: 'Gộp trái cây, rồi chạm để giao\nđúng món mỗi chú cá đặt.',
         best: t => 'Kỷ lục ' + t, notYet: 'Chưa chơi', play: 'CHƠI',
         g1: f => 'Tạo ra ' + f, g2: (a, b) => 'Phục vụ hết cá  ' + a + '/' + b,
-        tut1: 'Giữ & kéo TRÁI / PHẢI để nghiêng khay.\nTrái giống nhau lăn va vào nhau sẽ gộp!',
+        tut1: 'Giữ & kéo TRÁI / PHẢI để nghiêng khay.\nHai trái giống nhau chạm nhau là gộp!', hint2: '🪨 Đá không gộp: nghiêng cho đá lăn tới vỡ!', hint3: '🌊 Thủy triều nghiêng khay: nghiêng ngược lại!',
         tut2a: 'Kéo để ngắm, thả tay để thả trái.\nGộp trái thành món cá đã đặt.',
         tut2b: 'Trái này khớp đơn hàng!\nChạm vào trái đang sáng để giao.',
         pinned: 'Đang có khăn khác đè lên', hasItems: 'Lấy hết đồ trên khăn này trước', noTray: 'Không còn khay trống cho món này!',
         win: 'Qua màn!', lose1: 'Tràn khay!', loseSub1: 'Có trái nằm quá vạch đỏ quá lâu', lose2: 'Tràn hộp!',
-        retry: '↻ Chơi lại', menu: '⌂ Menu', next: 'Tiếp ▶', time: s => 'Thời gian ' + s, newBest: 'Kỷ lục mới!', allDone: 'Anh đã thử cả 2!',
+        retry: '↻ Chơi lại', menu: '⌂ Menu', next: 'Tiếp ▶', time: s => 'Thời gian ' + s, newBest: 'Kỷ lục mới!', allDone: 'Anh đã qua cả 4 màn!',
       },
     };
     return { T: (k, ...a) => { const v = TX[lang][k]; return typeof v === 'function' ? v(...a) : v; }, get lang() { return lang; }, toggle() { lang = lang === 'en' ? 'vi' : 'en'; LS.set('tm_lang', lang); } };
@@ -115,6 +116,16 @@
       g.fillStyle(0xff6f8a, 0.45); g.fillEllipse(cx - ex - er * 1.6, ey + r * 0.18, r * 0.22, r * 0.12); g.fillEllipse(cx + ex + er * 1.6, ey + r * 0.18, r * 0.22, r * 0.12);
       g.generateTexture('f' + i, s, s); g.destroy();
     });
+    for (let k = 0; k < 3; k++) { // stone, 3 crack stages
+      const g = scene.add.graphics(), r = 46, s = r * 2 + 8, c = s / 2;
+      g.fillStyle(0x4a4f57, 1); g.fillCircle(c, c, r); g.fillStyle(0x7d848f, 1); g.fillCircle(c - 2, c - 3, r - 5);
+      g.fillStyle(0x5d636c, 1); [[-14, 10, 7], [12, -12, 6], [16, 14, 5], [-10, -16, 4]].forEach(([x, y, q]) => g.fillCircle(c + x, c + y, q));
+      g.fillStyle(0xffffff, 0.22); g.fillEllipse(c - 14, c - 18, 26, 12);
+      g.lineStyle(4, 0x22252a, 1);
+      if (k >= 1) { g.beginPath(); g.moveTo(c - 4, c - r + 6); g.lineTo(c + 4, c - 10); g.lineTo(c - 6, c + 4); g.lineTo(c + 2, c + 18); g.strokePath(); }
+      if (k >= 2) { g.beginPath(); g.moveTo(c - r + 8, c + 6); g.lineTo(c - 14, c + 2); g.lineTo(c - 6, c + 4); g.moveTo(c + 4, c - 10); g.lineTo(c + 20, c - 6); g.lineTo(c + r - 8, c + 8); g.moveTo(c + 2, c + 18); g.lineTo(c + 12, c + r - 6); g.strokePath(); }
+      g.generateTexture('st' + k, s, s); g.destroy();
+    }
     { const g = scene.add.graphics(); g.fillStyle(0xffffff, 1); g.fillCircle(8, 8, 8); g.generateTexture('dot', 16, 16); g.destroy(); }
     { const g = scene.add.graphics(); g.fillStyle(0xffffff, 1); g.fillRect(0, 0, 12, 7); g.generateTexture('conf', 12, 7); g.destroy(); }
     // customer fish (facing left)
@@ -148,7 +159,7 @@
     }
     hud(nameKey) {
       const p = this.add.graphics().setDepth(40); p.fillStyle(0x000000, 0.28); p.fillRoundedRect(14, 14, W - 28, 160, 22);
-      this.add.text(34, 30, this.n + '. ' + T(nameKey), { fontFamily: FONT, fontSize: 34, color: '#ffffff' }).setDepth(41);
+      this.add.text(34, 30, this.n + '. ' + (T(nameKey) || nameKey), { fontFamily: FONT, fontSize: 34, color: '#ffffff' }).setDepth(41);
       this.btn(440, 56, 76, '⌂', () => this.scene.start('menu'));
       this.btn(530, 56, 76, '↻', () => this.scene.restart());
       this.btn(620, 56, 76, Sfx.muted ? '🔇' : '🔊', b => b.label.setText(Sfx.toggle() ? '🔇' : '🔊'));
@@ -226,7 +237,7 @@
         const stars = this.t <= this.par * 1000 ? 3 : this.t <= this.par * 1600 ? 2 : 1; this.stars = stars;
         for (let i = 0; i < 3; i++) { const s = this.add.text(270 + i * 90, 545, '★', { fontSize: 84, color: i < stars ? '#ffc400' : '#d8d8d8' }).setOrigin(0.5).setScale(0); c.add(s); this.tweens.add({ targets: s, scale: 1, delay: 150 * i, duration: 300, ease: 'Back.out' }); }
         c.add(this.add.text(360, 650, T('time', fmt(this.t)) + (this.newBest ? '   ·   ' + T('newBest') : ''), { fontFamily: F2, fontSize: 28, color: '#335' }).setOrigin(0.5));
-        const done = [1, 2].every(i => LS.get('tm_best_' + i));
+        const done = [1, 2, 3, 4].every(i => LS.get('tm_best_' + i));
         c.add(this.add.text(360, 712, done ? T('allDone') + ' ' + T('pick') : '', { fontFamily: F2, fontSize: 22, color: '#557' }).setOrigin(0.5));
       } else {
         c.add(this.add.text(360, 560, this.loseTx[1], { fontFamily: F2, fontSize: 27, color: '#445', align: 'center', wordWrap: { width: 480 } }).setOrigin(0.5));
@@ -252,15 +263,15 @@
       this.initBase(0); this.bg(0x1b5d8c, 0x0c2a4a);
       this.add.text(360, 120, T('title'), { fontFamily: FONT, fontSize: 76, color: '#ffffff', stroke: '#0b3a63', strokeThickness: 10 }).setOrigin(0.5);
       this.add.text(360, 200, T('sub'), { fontFamily: F2, fontSize: 30, color: '#cfe8ff' }).setOrigin(0.5);
-      const cards = [['n1', 'd1', 'tilt', 0x2f9be0], ['n2', 'd2', 'orders', 0xf08a2a]];
-      cards.forEach(([nk, dk, sc, col], i) => {
-        const y = 480 + i * 300, c = this.add.container(360, y);
+      const cards = [[T('n1') + ' 1', 'd1a', 'tilt1', 0x4fb3ef, 'f6'], [T('n1') + ' 2', 'd1b', 'tilt2', 0x2f86c9, 'st1'], [T('n1') + ' 3', 'd1c', 'tilt3', 0x1f5f9e, 'f5'], ['n2', 'd2', 'orders', 0xf08a2a, 'cf1']];
+      cards.forEach(([nk, dk, sc, col, ic], i) => {
+        const y = 370 + i * 200, c = this.add.container(360, y).setScale(0.86);
         const g = this.add.graphics(); g.fillStyle(0x000000, 0.25); g.fillRoundedRect(-310, -100, 620, 216, 28); g.fillStyle(0xffffff, 0.95); g.fillRoundedRect(-310, -108, 620, 216, 28); g.fillStyle(col, 1); g.fillRoundedRect(-310, -108, 150, 216, { tl: 28, bl: 28, tr: 0, br: 0 });
         c.add(g);
         c.add(this.add.text(-235, -60, String(i + 1), { fontFamily: FONT, fontSize: 60, color: '#ffffff' }).setOrigin(0.5));
-        const icon = i === 0 ? this.add.image(-235, 30, 'f4').setScale(0.75).setAngle(-18) : this.add.image(-235, 30, 'cf1').setScale(0.65);
-        c.add(icon); this.tweens.add({ targets: icon, angle: i === 0 ? 18 : 6, yoyo: true, repeat: -1, duration: 900 + i * 150, ease: 'Sine.inOut' });
-        c.add(this.add.text(-135, -70, T(nk), { fontFamily: FONT, fontSize: 38, color: '#123' }));
+        const icon = this.add.image(-235, 30, ic).setScale(ic === 'cf1' ? 0.65 : ic === 'f5' ? 0.6 : ic === 'st1' ? 1.1 : 0.7).setAngle(-12);
+        c.add(icon); this.tweens.add({ targets: icon, angle: 12, yoyo: true, repeat: -1, duration: 900 + i * 150, ease: 'Sine.inOut' });
+        c.add(this.add.text(-135, -70, T(nk) || nk, { fontFamily: FONT, fontSize: 38, color: '#123' }));
         c.add(this.add.text(-135, -14, T(dk), { fontFamily: F2, fontSize: 23, color: '#456', lineSpacing: 4 }));
         const best = +LS.get('tm_best_' + (i + 1));
         c.add(this.add.text(-135, 60, best ? '✓ ' + T('best', fmt(best)) : T('notYet'), { fontFamily: F2, fontSize: 22, color: best ? '#2b7a1e' : '#89a' }));
@@ -281,15 +292,22 @@
   // ---------- Level 1: Tilt Tray ----------
   // Physics runs in the tray's own frame (tray is static); tilting rotates gravity and the rendering.
   class Tilt extends Base {
-    constructor() { super('tilt'); }
+    constructor(v) { super('tilt' + v); this.v = v; }
     create() {
-      this.initBase(1); this.bg(0x2a6fa8, 0x0f3557); this.par = 75;
-      const L = this.L = { hw: 240, top: -360, floor: 380, line: -215, cx: 360, cy: 725, goal: +(Q.get('goal') || 6),
+      /* variants (same gentle spawn pacing, goal pear): 1 fruit only · 2 + stones after 25 s · 3 + gentle tide, plus stones */
+      const V = this.V = [null,
+        { goal: 6, par: 75, hint: 'tut1' },
+        { goal: 6, par: 90, hint: 'hint2', stoneAt: 25000, stoneEvery: 10000 },
+        { goal: 6, par: 100, hint: 'hint3', stoneAt: 25000, stoneEvery: 12000, tideAt: 6000, tideA: 0.13, tideP: 14000, tideRamp: 20000 }][this.v];
+      this.initBase(this.v); this.bg(0x2a6fa8, 0x0f3557); this.par = V.par;
+      const L = this.L = { hw: 240, top: -360, floor: 380, line: -215, cx: 360, cy: 725, goal: +(Q.get('goal') || V.goal),
+        stoneR: 46, crack: +(Q.get('crack') || 300), stoneAt: +(Q.get('stoneAt') || V.stoneAt || 0), stoneEvery: V.stoneEvery || 0, stoneMax: 99,
+        tideAt: +(Q.get('tideAt') || V.tideAt || 0), tideA: +(Q.get('tideA') || V.tideA || 0), tideP: V.tideP || 13000, tideRamp: V.tideRamp || 1,
         // gentle pacing: calm opening (slow spawns, no overflow check), then the spawn interval ramps down
         calm: +(Q.get('calm') || 8000), calmEvery: 2600, rampFrom: 2100, every: +(Q.get('every') || 1700), rampEnd: +(Q.get('ramp') || 50000),
         sweep: +(Q.get('sweep') || 140), sweepT: +(Q.get('sweepT') || 6500), mergeSpeed: +(Q.get('ms') || 1.0), grace: +(Q.get('grace') || 3500),
         maxTilt: +(Q.get('mt') || 0.36), sens: 260, ease: 0.07, gScale: +(Q.get('gs') || 1.6), fAir: +(Q.get('fa') || 0.005), spawnY: -300 };
-      this.tilt = 0; this.tiltT = 0; this.drag = null; this.hold = null; this.spawns = 0; this.maxTier = -1; this.overT = 0; this.score = 0; this.warnTx = null;
+      this.tilt = 0; this.tiltT = 0; this.drag = null; this.hold = null; this.spawns = 0; this.maxTier = -1; this.overT = 0; this.score = 0; this.warnTx = null; this.tide = 0; this.ang = 0; this.stonesBroken = 0; this.nextStone = L.stoneAt;
       this.fruits = new Set(); this.mergeQ = []; this.nextSpawn = 600;
       // tray visuals (rotating container)
       const tc = this.trayC = this.add.container(L.cx, L.cy).setDepth(5);
@@ -306,7 +324,7 @@
       g.fillStyle(0xffffff, 0.12); g.fillTriangle(-200, L.floor - 30, -160, L.floor - 50, -160, L.floor - 10); g.fillTriangle(200, L.floor - 30, 160, L.floor - 50, 160, L.floor - 10);
       tc.add(g); tc.add(sg);
       this.dangerG = this.add.graphics(); tc.add(this.dangerG);
-      this.cur = this.pick(); this.nextImg = this.add.image(0, L.top - 110, 'f' + this.cur).setAlpha(0.9); tc.add(this.nextImg);
+      this.cur = this.pick(); this.nextImg = this.add.image(0, L.top - 110, this.tex(this.cur)).setAlpha(0.9); tc.add(this.nextImg);
       // physics walls (tray frame)
       const M = this.matter, th = 80, opt = { isStatic: true, friction: 0.05, label: 'wall' };
       M.add.rectangle(0, L.floor + th / 2, 2 * L.hw + 2 * th, th, opt);
@@ -314,14 +332,15 @@
       M.add.rectangle(L.hw + th / 2, (L.top + L.floor) / 2 - 300, th, L.floor - L.top + 600, opt);
       M.add.rectangle(0, L.top - 260, 2 * L.hw + 2 * th, th, opt); // lid far above: nothing can fly away
       this.matter.world.on('collisionstart', e => this.onCol(e.pairs)); this.matter.world.on('collisionactive', e => this.onCol(e.pairs));
-      this.hud('n1'); this.setGoal(T('g1', fname(L.goal)));
+      this.hud(T('n1') + ' ' + this.v); this.setGoal(T('g1', fname(L.goal)));
       this.goalIcon = this.add.image(530, 132, 'f' + L.goal).setScale(26 / FR[L.goal].r).setDepth(41);
       this.chain();
       this.input.on('pointerdown', p => { if ((p.uiHit && p.uiHit === p.downTime) || p.y < 190 || this.state !== 'play') return; this.drag = { x: p.x, t0: this.tiltT, moved: 0 }; });
-      this.input.on('pointermove', p => { if (!this.drag || this.state !== 'play') return; const d = p.x - this.drag.x; this.drag.moved = Math.max(this.drag.moved, Math.abs(d)); this.tiltT = Phaser.Math.Clamp(this.drag.t0 + d / L.sens * L.maxTilt, -L.maxTilt, L.maxTilt); if (this.drag.moved > 50) this.endTut('tut1'); });
+      this.input.on('pointermove', p => { if (!this.drag || this.state !== 'play') return; const d = p.x - this.drag.x; this.drag.moved = Math.max(this.drag.moved, Math.abs(d)); this.tiltT = Phaser.Math.Clamp(this.drag.t0 + d / L.sens * L.maxTilt, -L.maxTilt, L.maxTilt); if (this.drag.moved > 50 && this.t > 2500) this.endTut(); });
       this.input.on('pointerup', () => { this.drag = null; });
-      this.showTut('tut1', { x: 230, y: 930 }, { x: 490, y: 930 }, 1165);
-      { // clearer demo: a mini tray tilts in sync with the hand
+      this.showTut(V.hint, { x: 230, y: 930 }, { x: 490, y: 930 }, 1165);
+      if (V.hint !== 'tut1') this.later(7000, () => this.endTut(V.hint));
+      else { // clearer demo: a mini tray tilts in sync with the hand
         const m = this.add.container(360, 790), mg = this.add.graphics();
         mg.fillStyle(0x000000, 0.45); mg.fillRoundedRect(-120, -70, 240, 130, 20);
         mg.lineStyle(8, 0xd9a066, 1); mg.beginPath(); mg.moveTo(-90, -40); mg.lineTo(-90, 30); mg.lineTo(90, 30); mg.lineTo(90, -40); mg.strokePath();
@@ -333,25 +352,31 @@
         this.tut.c.add(ar); this.tweens.add({ targets: ar, alpha: 0.5, yoyo: true, repeat: -1, duration: 500 });
         this.later(14000, () => this.endTut('tut1'));
       }
+      if (L.tideAt) { this.tideTx = this.add.text(360, 222, '', { fontFamily: FONT, fontSize: 30, color: '#bff4ff', stroke: '#0b3a63', strokeThickness: 6 }).setOrigin(0.5).setDepth(40); }
       window.TM = mergeApi(this.baseApi(), this.api());
     }
+    tex(lv) { return lv < 0 ? 'st0' : 'f' + lv; }
     chain() { const y = 1228, sp = 600 / FR.length; FR.forEach((f, i) => { const im = this.add.image(60 + sp * (i + 0.5), y, 'f' + i).setScale(Math.min(1, 24 / f.r)).setDepth(3); if (i === this.L.goal) this.add.circle(im.x, y, 31, 0xffffff, 0).setStrokeStyle(4, 0xffe03a, 1).setDepth(3); if (i > this.L.goal) im.setAlpha(0.35); }); }
     pick() { const r = this.rand(); return r < 0.4 ? 0 : r < 0.75 ? 1 : 2; }
+    nextCur() { const L = this.L; if (L.stoneAt && this.t >= this.nextStone && Array.from(this.fruits).filter(f => f.st).length < L.stoneMax) { this.nextStone = this.t + L.stoneEvery * (0.8 + 0.4 * this.rand()); return -1; } return this.pick(); }
     spawn(lv, x, y, vy) {
-      const r = FR[lv].r, body = this.matter.add.circle(x, y, r, { restitution: 0.15, friction: 0.02, frictionStatic: 0.05, frictionAir: this.L.fAir, density: 0.0012, label: 'fruit' });
-      const f = { body, lv, r, born: this.t, dead: false, spr: this.add.image(0, 0, 'f' + lv).setDepth(6) }; body.fo = f; f.spr.setDisplayOrigin(f.spr.width / 2, f.spr.height / 2 + 2);
+      const st = lv < 0, r = st ? this.L.stoneR : FR[lv].r, body = this.matter.add.circle(x, y, r, { restitution: st ? 0.05 : 0.15, friction: st ? 0.01 : 0.02, frictionStatic: st ? 0 : 0.05, frictionAir: this.L.fAir, density: st ? 0.003 : 0.0012, label: st ? 'stone' : 'fruit' });
+      const f = { body, lv, r, st, roll: 0, stage: 0, born: this.t, dead: false, spr: this.add.image(0, 0, this.tex(lv)).setDepth(6) }; body.fo = f; f.spr.setDisplayOrigin(f.spr.width / 2, f.spr.height / 2 + 2);
       this.matter.body.setVelocity(body, { x: 0, y: vy || 0 }); this.fruits.add(f);
       if (lv > this.maxTier) this.maxTier = lv; return f;
     }
     kill(f) { f.dead = true; this.fruits.delete(f); this.matter.world.remove(f.body); this.tweens.killTweensOf(f.spr); f.spr.destroy(); }
-    onCol(pairs) { const ms = this.L.mergeSpeed; for (const p of pairs) { const a = p.bodyA.fo, b = p.bodyB.fo; if (!a || !b || a.dead || b.dead || a.lv !== b.lv) continue; const va = a.body.velocity, vb = b.body.velocity; if (Math.abs(va.x - vb.x) < ms) continue; /* sideways (rolling) bump only: falling onto a twin does not merge */ a.dead = b.dead = true; this.mergeQ.push([a, b]); } }
+    onCol(pairs) { for (const p of pairs) { const a = p.bodyA.fo, b = p.bodyB.fo; if (!a || !b || a.dead || b.dead || a.st || b.st || a.lv !== b.lv) continue; /* same fruits merge on any touch */ a.dead = b.dead = true; this.mergeQ.push([a, b]); } }
     spawnEvery() { const L = this.L; if (this.t < L.calm) return L.calmEvery; const k = Math.min(1, (this.t - L.calm) / (L.rampEnd - L.calm)); return L.rampFrom + (L.every - L.rampFrom) * k; }
-    toScreen(x, y) { const c = Math.cos(this.tilt), s = Math.sin(this.tilt); return { x: this.L.cx + x * c - y * s, y: this.L.cy + x * s + y * c }; }
+    toScreen(x, y) { const c = Math.cos(this.ang), s = Math.sin(this.ang); return { x: this.L.cx + x * c - y * s, y: this.L.cy + x * s + y * c }; }
     step(dt) {
       const L = this.L;
       if (!this.drag && this.hold == null) this.tiltT *= 0.93; if (this.hold != null) this.tiltT = this.hold;
       this.tilt += (this.tiltT - this.tilt) * L.ease;
-      const eg = this.matter.world.engine.gravity, pa = this.tilt * L.gScale; eg.x = Math.sin(pa) * 1.4; eg.y = Math.cos(pa) * 1.4;
+      /* tide: the tray slants by itself, slowly growing; the player must counter-tilt */
+      if (L.tideAt && this.t > L.tideAt && this.state === 'play') { const k = Math.min(1, (this.t - L.tideAt) / L.tideRamp); this.tide = L.tideA * k * Math.sin((this.t - L.tideAt) / L.tideP * Math.PI * 2); }
+      this.ang = Phaser.Math.Clamp(this.tilt + this.tide, -0.6, 0.6);
+      const eg = this.matter.world.engine.gravity, pa = this.ang * L.gScale; eg.x = Math.sin(pa) * 1.4; eg.y = Math.cos(pa) * 1.4;
       this.matter.world.step(dt);
       for (const [a, b] of this.mergeQ) {
         const lv = a.lv, x = (a.body.position.x + b.body.position.x) / 2, y = (a.body.position.y + b.body.position.y) / 2;
@@ -365,15 +390,21 @@
       }
       this.mergeQ.length = 0;
       for (const f of this.fruits) if (f.body.position.y > L.floor + 300) this.kill(f);
+      /* stones crack as they roll; crumble after L.crack px of rolling */
+      for (const f of this.fruits) if (f.st) {
+        const vx = Math.abs(f.body.velocity.x); if (vx > 0.6) f.roll += vx;
+        const sg = Math.min(2, Math.floor(f.roll / L.crack * 3)); if (sg !== f.stage) { f.stage = sg; f.spr.setTexture('st' + sg); Sfx.crack(); }
+        if (f.roll >= L.crack) { const s = this.toScreen(f.body.position.x, f.body.position.y); this.kill(f); this.stonesBroken++; this.pop(s.x, s.y, 0x8a9099, 16, L.stoneR); Sfx.crack(); this.score += 30; }
+      }
       if (this.state !== 'play') return;
       // spawning from the spout (waits while the mouth is blocked)
       const sx = this.spoutX = Math.sin(this.t / L.sweepT * Math.PI * 2) * L.sweep; this.spoutG.x = sx; this.nextImg.x = sx;
       if (this.t >= this.nextSpawn) {
-        const r = FR[this.cur].r; let clear = true;
+        const r = this.cur < 0 ? L.stoneR : FR[this.cur].r; let clear = true;
         for (const f of this.fruits) if (Math.hypot(f.body.position.x - sx, f.body.position.y - L.spawnY) < f.r + r + 4) { clear = false; break; }
         if (clear) {
           this.spawn(this.cur, sx + (this.rand() - 0.5) * 6, L.spawnY, 2); this.spawns++; Sfx.spawn();
-          this.cur = this.pick(); this.nextImg.setTexture('f' + this.cur).setScale(0.3); this.tweens.add({ targets: this.nextImg, scale: 1, duration: 200, ease: 'Back.out' });
+          this.cur = this.nextCur(); this.nextImg.setTexture(this.tex(this.cur)).setScale(0.3); this.tweens.add({ targets: this.nextImg, scale: 1, duration: 200, ease: 'Back.out' });
           this.nextSpawn = this.t + this.spawnEvery();
         }
       }
@@ -384,8 +415,9 @@
       if (this.overT >= L.grace) this.lose(T('lose1'), T('loseSub1'));
     }
     frame() {
-      const L = this.L; this.trayC.rotation = this.tilt;
-      for (const f of this.fruits) { const s = this.toScreen(f.body.position.x, f.body.position.y); f.spr.setPosition(s.x, s.y).setRotation(f.body.angle + this.tilt); }
+      const L = this.L; this.trayC.rotation = this.ang;
+      for (const f of this.fruits) { const s = this.toScreen(f.body.position.x, f.body.position.y); f.spr.setPosition(s.x, s.y).setRotation(f.body.angle + this.ang); }
+      if (this.tideTx) { const m = Math.abs(this.tide); this.tideTx.setText(m < 0.02 ? '' : this.tide > 0 ? '🌊 ' + '▶'.repeat(1 + Math.round(m / 0.07)) : '◀'.repeat(1 + Math.round(m / 0.07)) + ' 🌊').setAlpha(0.5 + m * 2.5); }
       const g = this.dangerG, w = this.overT > 0, a = w ? 0.55 + 0.45 * Math.abs(Math.sin(this.t / 110)) : 0.5; g.clear();
       if (w) { g.fillStyle(0xff2a2a, 0.12 + 0.18 * a); g.fillRect(-L.hw, L.top, 2 * L.hw, L.line - L.top); }
       g.lineStyle(w ? 9 : 4, w ? 0xff2a2a : 0xff3b3b, a);
@@ -396,9 +428,9 @@
     api() {
       const s = this;
       return {
-        get L() { return s.L; }, get tilt() { return s.tilt; }, get cur() { return s.cur; }, get spawns() { return s.spawns; }, get overT() { return s.overT; }, get maxTier() { return s.maxTier; },
+        get L() { return s.L; }, get tilt() { return s.tilt; }, get tide() { return s.tide; }, get ang() { return s.ang; }, get v() { return s.v; }, get stonesBroken() { return s.stonesBroken; }, get cur() { return s.cur; }, get spawns() { return s.spawns; }, get overT() { return s.overT; }, get maxTier() { return s.maxTier; },
         setTilt: a => { s.hold = a == null ? null : Phaser.Math.Clamp(a, -s.L.maxTilt, s.L.maxTilt); if (a != null) s.endTut('tut1'); },
-        fruits: () => Array.from(s.fruits).map(f => ({ x: f.body.position.x, y: f.body.position.y, lv: f.lv, r: f.r, age: s.t - f.born })),
+        fruits: () => Array.from(s.fruits).map(f => ({ x: f.body.position.x, y: f.body.position.y, lv: f.lv, r: f.r, st: f.st, roll: f.roll, age: s.t - f.born })),
       };
     }
   }
@@ -407,7 +439,7 @@
   class Orders extends Base {
     constructor() { super('orders'); }
     create() {
-      this.initBase(2); this.bg(0x1f7fa8, 0x0d3550); this.par = 110;
+      this.initBase(4); this.bg(0x1f7fa8, 0x0d3550); this.par = 110;
       const L = this.L = { left: 80, right: 640, top: 600, floor: 1150, dropY: 520, spawn: [0, 0, 1, 1, 2] };
       this.ORD = [[2], [3], [2, 2], [4], [3, 2], [4, 3]];
       this.served = 0; this.oi = 0; this.slots = [null, null, null]; this.slotX = [125, 360, 595];
@@ -530,8 +562,8 @@
   }
 
   const start = Q.get('level');
-  const scenes = [Menu, Tilt, Orders];
-  if (start && +start >= 1 && +start <= 2) scenes.unshift(scenes.splice(+start, 1)[0]);
+  const scenes = [Menu, new Tilt(1), new Tilt(2), new Tilt(3), Orders];
+  if (start && +start >= 1 && +start <= 4) scenes.unshift(scenes.splice(+start, 1)[0]);
   new Phaser.Game({
     type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#123a5c',
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
